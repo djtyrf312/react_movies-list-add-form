@@ -6,7 +6,7 @@ type Props = {
   onAdd: (newValue: Movie) => void;
 };
 
-function isValidUrl(url: string) {
+function validateUrl(url: string) {
   const pattern =
     // eslint-disable-next-line max-len
     /^((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=+$,\w]+@)?[A-Za-z0-9.-]+|(?:www\.|[-;:&=+$,\w]+@)[A-Za-z0-9.-]+)((?:\/[+~%/.\w-_]*)?\??(?:[-+=&;%@,.\w_]*)#?(?:[,.!/\\\w]*))?)$/;
@@ -14,7 +14,7 @@ function isValidUrl(url: string) {
   return pattern.test(url);
 }
 
-export const NewMovie = ({ onAdd }: Props) => {
+export const NewMovieForm = ({ onAdd }: Props) => {
   // Increase the count after successful form submission
   // to reset touched status of all the `Field`s
   const [count, setCount] = useState(0);
@@ -23,19 +23,9 @@ export const NewMovie = ({ onAdd }: Props) => {
   const [imdbUrl, setImdbUrl] = useState('');
   const [imdbId, setImdbId] = useState('');
   const [description, setDescription] = useState('');
-  let isDisabled = true;
-
-  if (title.trim() && imgUrl.trim() && imdbUrl.trim() && imdbId.trim()) {
-    isDisabled = false;
-  }
-
-  const movie = {
-    title,
-    description,
-    imgUrl,
-    imdbUrl,
-    imdbId,
-  };
+  const isDisabled = [title, imgUrl, imdbUrl, imdbId].some(
+    value => !value.trim(),
+  );
 
   const clearForm = () => {
     setTitle('');
@@ -47,17 +37,19 @@ export const NewMovie = ({ onAdd }: Props) => {
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    onAdd(movie);
+    onAdd({
+      title,
+      description,
+      imgUrl,
+      imdbUrl,
+      imdbId,
+    });
     clearForm();
     setCount(count + 1);
   };
 
   return (
-    <form
-      className="NewMovie"
-      key={count}
-      onSubmit={handleSubmit}
-    >
+    <form className="NewMovie" key={count} onSubmit={handleSubmit}>
       <h2 className="title">Add a movie</h2>
 
       <TextField
@@ -81,7 +73,7 @@ export const NewMovie = ({ onAdd }: Props) => {
         value={imgUrl}
         onChange={value => setImgUrl(value)}
         required
-        isValidUrl={value => isValidUrl(value)}
+        validateUrl={value => validateUrl(value)}
       />
 
       <TextField
@@ -90,7 +82,7 @@ export const NewMovie = ({ onAdd }: Props) => {
         value={imdbUrl}
         required
         onChange={value => setImdbUrl(value)}
-        isValidUrl={value => isValidUrl(value)}
+        validateUrl={value => validateUrl(value)}
       />
 
       <TextField

@@ -8,14 +8,12 @@ type Props = {
   placeholder?: string;
   required?: boolean;
   onChange?: (newValue: string) => void;
-  isValidUrl?: (url: string) => boolean;
+  validateUrl?: (url: string) => boolean;
 };
 
 function getRandomDigits() {
   return Math.random().toFixed(16).slice(2);
 }
-
-
 
 export const TextField: React.FC<Props> = ({
   name,
@@ -24,7 +22,7 @@ export const TextField: React.FC<Props> = ({
   placeholder = `Enter ${label}`,
   required = false,
   onChange = () => {},
-  isValidUrl = () => true,
+  validateUrl = () => true,
 }) => {
   // generate a unique id once on component load
   const [id] = useState(() => `${name}-${getRandomDigits()}`);
@@ -32,7 +30,7 @@ export const TextField: React.FC<Props> = ({
   // To show errors only if the field was touched (onBlur)
   const [touched, setTouched] = useState(false);
   const hasEmptyFieldError = touched && required && !value;
-  const hasWrongUrlError = touched && value && !isValidUrl(value);
+  const hasWrongUrlError = touched && value && !validateUrl(value);
 
   return (
     <div className="field">
@@ -60,7 +58,7 @@ export const TextField: React.FC<Props> = ({
       )}
 
       {hasWrongUrlError && (
-        <p className="help is-danger">{`Url is incorrect`}</p>
+        <p className="help is-danger">Url is incorrect</p>
       )}
     </div>
   );
